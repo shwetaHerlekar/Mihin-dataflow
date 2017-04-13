@@ -33,17 +33,35 @@ import java.util.HashMap;
 
 public class Mihin{
 
-	public static class SumLines implements SerializableFunction<Iterable<String>, String> {
-    		
-		@Override
-    		public String apply(Iterable<String> input) {
-      			String sum = "";
-      			for (String item : input) {
-        				sum += item;
-      			}
-      			return sum;
-    		}
-  	}
+	 public class CollectFile extends CombineFn<String, AverageFn.Accum, String> {
+   		public static class Accum {
+     			String file="";
+   		}
+
+ 		@Override
+   		public Accum createAccumulator() { return new Accum(); }
+
+   		@Override
+   		public Accum addInput(Accum accum, String input) {
+       		accum.file += input;
+       		return accum;
+   		}
+
+   		@Override
+   		public Accum mergeAccumulators(Iterable<Accum> accums) {
+     			Accum merged = createAccumulator();
+     			for (Accum accum : accums) {
+       				merged.file += accum.file;
+     			}
+     			return merged;
+   		}
+
+  		@Override
+   		public String extractOutput(Accum accum) {
+     			return ((String) accum.file);
+   		}
+ }
+
 
 	static class Patient{
 		public String name,patient_id,city,state,postal_code,email,gender,bdate,all_json;
@@ -80,8 +98,8 @@ public class Mihin{
 		// Then create the pipeline.
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
-		PCollection<Iterable<String>> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		PCollection<String> line = lines.apply(Combine.globally(new SumLines()));
+		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
+		PCollection<String> line = lines.apply(Combine.globally(new CollectFile()));
 		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
