@@ -58,7 +58,7 @@ class AverageFn extends CombineFn<String, AverageFn.Accum, String> {
 
   		@Override
    		public String extractOutput(Accum accum) {
-     			return ((String) accum.file);
+     			return ((string) accum.file);
    		}
  }
 public class Mihin{
@@ -100,7 +100,7 @@ public class Mihin{
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
 		PCollection<String> line = lines.apply(Combine.globally(new AverageFn()));
-		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt").withCoder(StringUtf8Coder.of()));
+		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
 		//.apply(CloudBigtableIO.writeToTable(config));
