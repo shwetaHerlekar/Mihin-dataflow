@@ -99,7 +99,8 @@ public class Mihin{
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		lines.setCoder(StringUtf8Coder);
+		CoderRegistry cr = p.getCoderRegistry();
+  		cr.registerCoder(StringUtf8Coder.class);
 		PCollection<String> line = lines.apply(Combine.globally(new AverageFn()));
 		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
