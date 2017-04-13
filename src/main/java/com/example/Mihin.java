@@ -85,7 +85,7 @@ public class Mihin{
 				c.output(line);
         			}
       		}));
-		p.apply(Create.of(file)).setCoder(StringUtf8Coder.of()) apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
+		p.apply(Create.of(file)).setCoder(StringUtf8Coder.of()).apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
 		//.apply(CloudBigtableIO.writeToTable(config));
