@@ -33,7 +33,7 @@ import java.util.HashMap;
 
 public class Mihin{
 
-	 public class CollectFile extends CombineFn<String, AverageFn.Accum, String> {
+	 public class CollectFile extends CombineFn<String, CollectFile.Accum, String> {
    		public static class Accum {
      			String file="";
    		}
