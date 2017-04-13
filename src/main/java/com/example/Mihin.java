@@ -31,7 +31,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class CollectFile extends CombineFn<String, CollectFile.Accum, String> {
+class CollectFile extends CombineFn<String, CollectFile.Accum, String> {
    		public static class Accum {
      			String file="";
    		}
