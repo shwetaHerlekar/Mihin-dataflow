@@ -86,7 +86,7 @@ public class Mihin{
 				c.output(line);
         			}
       		}));
-		PCollection<string> content=lines1.apply(Create.of(file)).setCoder(StringUtf8Coder.of());
+		PCollection<String> content=lines1.apply(Create.of(file)).setCoder(StringUtf8Coder.of());
 
 		content.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
