@@ -99,7 +99,7 @@ public class Mihin{
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		PCollection<String> line = lines.apply(Combine.globally(new AverageFn()));
+		PCollection<String> line = lines.apply(Combine.globally(new AverageFn().withCoder(StringUtf8Coder.of())));
 		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
