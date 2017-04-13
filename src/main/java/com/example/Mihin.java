@@ -82,7 +82,7 @@ public class Mihin{
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<Iterable<String>> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://synpuf_data/patient_entry.txt"));
-		PCollection<String> line = lines.apply(Combine.globally(new SumLines()))
+		PCollection<String> line = lines.apply(Combine.globally(new SumLines()));
 		line.apply(TextIO.Write.to("gs://mihin-data/temp.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
