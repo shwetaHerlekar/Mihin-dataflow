@@ -36,7 +36,7 @@ public class Mihin{
 	public static class SumLines implements SerializableFunction<Iterable<String>, String> {
     		
 		@Override
-    		public Integer apply(Iterable<String> input) {
+    		public String apply(Iterable<String> input) {
       			String sum = "";
       			for (String item : input) {
         				sum += item;
