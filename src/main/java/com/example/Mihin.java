@@ -31,9 +31,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class Mihin{
-
-	 public class CollectFile extends CombineFn<String, CollectFile.Accum, String> {
+public class CollectFile extends CombineFn<String, CollectFile.Accum, String> {
    		public static class Accum {
      			String file="";
    		}
@@ -61,7 +59,7 @@ public class Mihin{
      			return ((String) accum.file);
    		}
  }
-
+public class Mihin{
 
 	static class Patient{
 		public String name,patient_id,city,state,postal_code,email,gender,bdate,all_json;
