@@ -13,7 +13,6 @@ import com.google.cloud.dataflow.sdk.transforms.*;
 import com.google.cloud.dataflow.sdk.transforms.Combine.*;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 import com.google.cloud.dataflow.sdk.values.PCollection;
-import com.google.cloud.dataflow.sdk.coders.StringUtf8Coder;
 import com.opencsv.CSVParser;
 import java.io.IOException;
 import com.google.cloud.bigtable.dataflow.CloudBigtableIO;
@@ -22,7 +21,7 @@ import com.google.cloud.bigtable.dataflow.CloudBigtableScanConfiguration;
 import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.google.cloud.dataflow.sdk.coders.CoderRegistry;
+
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,35 +33,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
-class AverageFn extends CombineFn<String, AverageFn.Accum, String> {
-   		public static class Accum {
-     			String file="";
-   		}
 
- 		@Override
-   		public Accum createAccumulator() { return new Accum(); }
-
-   		@Override
-   		public Accum addInput(Accum accum, String input) {
-       		accum.file += input;
-       		return accum;
-   		}
-
-   		@Override
-   		public Accum mergeAccumulators(Iterable<Accum> accums) {
-     			Accum merged = createAccumulator();
-     			for (Accum accum : accums) {
-       				merged.file += accum.file;
-     			}
-     			return merged;
-   		}
-
-  		@Override
-   		public String extractOutput(Accum accum) {
-     			return ((String) accum.file);
-   		}
- }
 public class Mihin{
+
+	public static file="";
 
 	static class Patient{
 		public String name,patient_id,city,state,postal_code,email,gender,bdate,all_json;
@@ -100,10 +74,18 @@ public class Mihin{
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		CoderRegistry cr = p.getCoderRegistry();
-  		cr.registerCoder(StringUtf8Coder.class);
-		PCollection<String> line = lines.apply(Combine.globally(new AverageFn()));
-		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
+		lines.apply(
+			 ParDo
+      			.named("Collect Data")            // the transform name
+      			.of(new DoFn<String, String>() {       // a DoFn as an anonymous inner class instance
+        			@Override
+        			public void processElement(ProcessContext c) {
+          				String line = c.element();
+				file+=line;
+				c.output(line);
+        			}
+      		}));
+		p.apply(Create.of(file)).setCoder(StringUtf8Coder.of()) apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
 		//.apply(CloudBigtableIO.writeToTable(config));
