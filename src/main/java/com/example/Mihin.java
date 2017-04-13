@@ -22,6 +22,7 @@ import com.google.cloud.bigtable.dataflow.CloudBigtableScanConfiguration;
 import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
+import com.google.cloud.dataflow.sdk.coders.CoderRegistry;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
