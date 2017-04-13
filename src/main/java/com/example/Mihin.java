@@ -13,6 +13,7 @@ import com.google.cloud.dataflow.sdk.transforms.*;
 import com.google.cloud.dataflow.sdk.transforms.Combine.*;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 import com.google.cloud.dataflow.sdk.values.PCollection;
+import com.google.cloud.dataflow.sdk.coders.StringUtf8Coder;
 import com.opencsv.CSVParser;
 import java.io.IOException;
 import com.google.cloud.bigtable.dataflow.CloudBigtableIO;
@@ -99,7 +100,7 @@ public class Mihin{
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
 		PCollection<String> line = lines.apply(Combine.globally(new AverageFn()));
-		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
+		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt").withCoder(StringUtf8Coder.of()));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
 		//.apply(CloudBigtableIO.writeToTable(config));
