@@ -10,6 +10,7 @@ import com.google.cloud.dataflow.sdk.options.Description;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.transforms.*;
+import com.google.cloud.dataflow.sdk.transforms.Combine.*;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 import com.google.cloud.dataflow.sdk.values.PCollection;
 import com.opencsv.CSVParser;
@@ -31,7 +32,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
-class CollectFile extends CombineFn<String, CollectFile.Accum, String> {
+class AverageFn extends CombineFn<String, AverageFn.Accum, String> {
    		public static class Accum {
      			String file="";
    		}
@@ -97,7 +98,7 @@ public class Mihin{
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		PCollection<String> line = lines.apply(Combine.globally(new CollectFile()));
+		PCollection<String> line = lines.apply(Combine.globally(new AverageFn()));
 		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
