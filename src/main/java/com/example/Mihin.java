@@ -58,7 +58,7 @@ class AverageFn extends CombineFn<String, AverageFn.Accum, String> {
 
   		@Override
    		public String extractOutput(Accum accum) {
-     			return ((string) accum.file);
+     			return ((String) accum.file);
    		}
  }
 public class Mihin{
