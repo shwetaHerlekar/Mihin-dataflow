@@ -35,26 +35,13 @@ import java.io.IOException;
 import java.util.HashMap;
 
 
+
+
 public class Mihin{
 
 	public static String file="";
 
-	static class Patient{
-		public String name,patient_id,city,state,postal_code,email,gender,bdate,all_json;
-
-		public Patient()
-		{
-			name="";
-			patient_id="";
-			city="";
-			state="";
-			postal_code="";
-			email="";
-			gender="";
-			bdate="";
-			all_json="";
-		}
-	}
+	
 
     public static void main(String[] args) {
 		
@@ -75,17 +62,8 @@ public class Mihin{
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		lines.apply(
-			 ParDo
-      			.named("Collect Data")            // the transform name
-      			.of(new DoFn<String, String>() {       // a DoFn as an anonymous inner class instance
-        			@Override
-        			public void processElement(ProcessContext c) {
-          				String line = c.element();
-				file+=line;
-				c.output(line);
-        			}
-      		})).apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
+		for (lines.IsBounded c :  lines.IsBounded.values())
+   		 System.out.println(c);
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
 		//.apply(CloudBigtableIO.writeToTable(config));
