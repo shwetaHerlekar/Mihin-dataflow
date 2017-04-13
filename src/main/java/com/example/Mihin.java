@@ -75,7 +75,7 @@ public class Mihin{
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
 		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		lines.apply(
+		PCollection<String> lines1=lines.apply(
 			 ParDo
       			.named("Collect Data")            // the transform name
       			.of(new DoFn<String, String>() {       // a DoFn as an anonymous inner class instance
@@ -85,7 +85,10 @@ public class Mihin{
 				file+=line;
 				c.output(line);
         			}
-      		})).apply(Create.of(file)).setCoder(StringUtf8Coder.of()).apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
+      		}));
+		PCollection<string> content=lines1.apply(Create.of(file)).setCoder(StringUtf8Coder.of())
+
+		content.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
 		//.apply(CloudBigtableIO.writeToTable(config));
