@@ -36,7 +36,7 @@ import java.util.HashMap;
 
 public class Mihin{
 
-	public static file="";
+	public static String file="";
 
 	static class Patient{
 		public String name,patient_id,city,state,postal_code,email,gender,bdate,all_json;
