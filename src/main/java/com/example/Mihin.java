@@ -9,8 +9,7 @@ import com.google.cloud.dataflow.sdk.options.DefaultValueFactory;
 import com.google.cloud.dataflow.sdk.options.Description;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
-import com.google.cloud.dataflow.sdk.transforms.DoFn;
-import com.google.cloud.dataflow.sdk.transforms.ParDo;
+import com.google.cloud.dataflow.sdk.transforms.*;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 import com.google.cloud.dataflow.sdk.values.PCollection;
 import com.opencsv.CSVParser;
@@ -37,7 +36,7 @@ public class Mihin{
 	public static class SumLines implements SerializableFunction<Iterable<String>, String> {
     		
 		@Override
-    		public Integer apply(Iterable<Integer> input) {
+    		public Integer apply(Iterable<String> input) {
       			String sum = "";
       			for (String item : input) {
         				sum += item;
@@ -81,9 +80,9 @@ public class Mihin{
 		// Then create the pipeline.
 		Pipeline p = Pipeline.create(options);
 		CloudBigtableIO.initializeForWrite(p);
-		PCollection<Iterable<String>> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://synpuf_data/patient_entry.txt"));
+		PCollection<Iterable<String>> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
 		PCollection<String> line = lines.apply(Combine.globally(new SumLines()));
-		line.apply(TextIO.Write.to("gs://mihin-data/temp.txt"));
+		line.apply(TextIO.Write.to("gs://mihin-data/patients.txt"));
 		
 		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
 		//.apply(CloudBigtableIO.writeToTable(config));
