@@ -21,7 +21,7 @@ import com.google.cloud.bigtable.dataflow.CloudBigtableScanConfiguration;
 import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-public class Synpuf
+public class Mihin
 {
   private static final byte[] FAMILY = Bytes.toBytes("patient-entry");
   private static final byte[] name = Bytes.toBytes("name");
