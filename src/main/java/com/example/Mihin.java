@@ -52,7 +52,7 @@ static final DoFn<String, Mutation> MUTATION_TRANSFORM = new DoFn<String, Mutati
    				Put put_object = new Put(Bytes.toBytes(row_id));
 				row_id = row_id +1;	
      			    	byte[] data = Bytes.toBytes( parts[0]);
-			if(data!="null")
+			if(parts[0]!="null")
    				put_object.addColumn(FAMILY, name,data);
 			if(parts[1]!="null")
  			put_object.addColumn(FAMILY, city, Bytes.toBytes(parts[1]));
