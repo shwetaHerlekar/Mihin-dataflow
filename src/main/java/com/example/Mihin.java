@@ -33,6 +33,8 @@ public class Mihin
     private static final byte[] patient_id = Bytes.toBytes("patient_id");
    private static final byte[] all_json = Bytes.toBytes("all_json");
 
+   private static long row_id = 1;
+
 static final DoFn<String, Mutation> MUTATION_TRANSFORM = new DoFn<String, Mutation>() {
   private static final long serialVersionUID = 1L;
 
