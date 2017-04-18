@@ -9,8 +9,8 @@ import com.google.cloud.dataflow.sdk.options.DefaultValueFactory;
 import com.google.cloud.dataflow.sdk.options.Description;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
-import com.google.cloud.dataflow.sdk.transforms.*;
-import com.google.cloud.dataflow.sdk.transforms.Combine.*;
+import com.google.cloud.dataflow.sdk.transforms.DoFn;
+import com.google.cloud.dataflow.sdk.transforms.ParDo;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 import com.google.cloud.dataflow.sdk.values.PCollection;
 import com.opencsv.CSVParser;
@@ -21,30 +21,51 @@ import com.google.cloud.bigtable.dataflow.CloudBigtableScanConfiguration;
 import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.google.cloud.dataflow.sdk.coders.StringUtf8Coder;
+public class Synpuf
+{
+  private static final byte[] FAMILY = Bytes.toBytes("patient-entry");
+  private static final byte[] name = Bytes.toBytes("name");
+    private static final byte[] city = Bytes.toBytes("city");
+    private static final byte[] state = Bytes.toBytes("state");
+    private static final byte[] postal_code = Bytes.toBytes("postal_code");
+    private static final byte[] birth_date = Bytes.toBytes("birth_date");
+    private static final byte[] gender = Bytes.toBytes("gender");
+    private static final byte[] patient_id = Bytes.toBytes("patient_id");
+   private static final byte[] all_json = Bytes.toBytes("all_json");
 
+static final DoFn<String, Mutation> MUTATION_TRANSFORM = new DoFn<String, Mutation>() {
+  private static final long serialVersionUID = 1L;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+  @Override
+  public void processElement(DoFn<String, Mutation>.ProcessContext c) throws Exception {
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
+  	String line = c.element();
+		 	CSVParser csvParser = new CSVParser();
+ 		String[] parts = csvParser.parseLine(line);
 
-
-
-
-public class Mihin{
-
-	public static String file="";
-
+      			// Output each word encountered into the output PCollection.
+       			
+         			// c.output(part);
+       			
+   				Put put_object = new Put(Bytes.toBytes(row_id));
+				row_id = row_id +1;	
+     			    	byte[] data = Bytes.toBytes( parts[0]);
+   			put_object.addColumn(FAMILY, name,data);
+ 			put_object.addColumn(FAMILY, city, Bytes.toBytes(parts[1]));
+			put_object.addColumn(FAMILY, state, Bytes.toBytes(parts[2]));
+			put_object.addColumn(FAMILY, postal_code, Bytes.toBytes(parts[3]));
+			put_object.addColumn(FAMILY, birth_date, Bytes.toBytes(parts[4]));
+			put_object.addColumn(FAMILY, gender, Bytes.toBytes(parts[5]));
+			put_object.addColumn(FAMILY, patient_id, Bytes.toBytes(parts[6]));
+			put_object.addColumn(FAMILY, all_json, Bytes.toBytes(parts[7]));
+			c.output(put_object);
+  }
+};
+		
 	
 
-    public static void main(String[] args) {
-		
+	public static void main(String[] args) 
+	{
 		// config object for writing to bigtable
 
 		CloudBigtableScanConfiguration config = new CloudBigtableScanConfiguration.Builder().withProjectId("healthcare-12").withInstanceId("hc-dataset").withTableId("mihin-data").build();
@@ -60,86 +81,14 @@ public class Mihin{
 
 		// Then create the pipeline.
 		Pipeline p = Pipeline.create(options);
-		CloudBigtableIO.initializeForWrite(p);
-		PCollection<String> lines=p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.txt"));
-		for (String c :  lines)
-   		 System.out.println(c);
-		
-		//.apply(ParDo.named("Processing Synpuf data").of(MUTATION_TRANSFORM))
-		//.apply(CloudBigtableIO.writeToTable(config));
+			CloudBigtableIO.initializeForWrite(p);
+p.apply(TextIO.Read.named("Reading from File").from("gs://mihin-data/Patient_entry.csv")).apply(ParDo.named("Processing Mihin data").of(MUTATION_TRANSFORM)).apply(CloudBigtableIO.writeToTable(config));
 	
 		p.run();
 
-
-
-
-
-
-         /*JSONParser parser = new JSONParser();
-
-        try {
-
-            Object obj = parser.parse(new FileReader("src/main/resources/Patient_entry.txt"));
-
-            JSONObject jsonObject = (JSONObject) obj;
-          
-
-	Patient[] patients = new Patient[10];
-            JSONArray resource = (JSONArray) jsonObject.get("resources");
-        
-            for (int i = 0; i < 10; i++) {
-            	
-            	Patient p = new Patient();
-                JSONObject jsonObject1 = (JSONObject) parser.parse(resource.get(i).toString());
-    			//System.out.println(jsonObject);
-			
-    			HashMap map = (HashMap) jsonObject1.get("resource");
-			p.all_json=String.valueOf(map);
-    			JSONArray FullnameArray  = (JSONArray) map.get("name");
-    		 	JSONObject nameObject  = (JSONObject) parser.parse(FullnameArray.get(0).toString());
-    			JSONArray nameArray = (JSONArray)(nameObject.get("given"));
-    			for(int j=0;j<nameArray.size();j++)
-			{
-				if(j==(nameArray.size()-1))
-					p.name+=nameArray.get(j);
-				else
-				p.name+=nameArray.get(j)+" ";	
-			}
-    			
-    			if ( map.get("address") != null) {
-    			  
-       				JSONObject addressObject  = (JSONObject) parser.parse(((JSONArray) map.get("address")).get(0).toString());
-        				p.city=String.valueOf(addressObject.get("city"));
-        				p.state=String.valueOf(addressObject.get("state"));
-       				p.postal_code=String.valueOf(addressObject.get("postalCode"));
-			}
-    			p.bdate=String.valueOf(map.get("birthDate"));
-    			p.gender=String.valueOf(map.get("gender"));
-    			p.patient_id=String.valueOf(map.get("id"));
-			patients[i]=p;
+		//PCollection<String> lines=p.apply(TextIO.Read.from("gs://synpuf-data/DE1_0_2008_Beneficiary_Summary_File_Sample_1.csv"))
+		//PCollection<String> fields = lines.apply(ParDo.of(new ExtractFieldsFn()));
+		//p.apply(TextIO.Write.to("gs://synpuf-data/temp.txt"));
 	}
-           
-		
-	for(int i=0;i<patients.length;i++)
-		{
-			System.out.println(patients[i].name);
-			System.out.println(patients[i].city);
-			System.out.println(patients[i].state);
-			System.out.println(patients[i].postal_code);
-			System.out.println(patients[i].bdate);
-			System.out.println(patients[i].gender);
-			System.out.println(patients[i].patient_id);
-			System.out.println(patients[i].all_json);
-		}
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
-    }
 
 }
