@@ -52,21 +52,21 @@ static final DoFn<String, Mutation> MUTATION_TRANSFORM = new DoFn<String, Mutati
    				Put put_object = new Put(Bytes.toBytes(row_id));
 				row_id = row_id +1;	
      			    	byte[] data = Bytes.toBytes( parts[0]);
-			if(data!='null')
+			if(data!="null")
    				put_object.addColumn(FAMILY, name,data);
-			if(parts[1]!='null')
+			if(parts[1]!="null")
  			put_object.addColumn(FAMILY, city, Bytes.toBytes(parts[1]));
-			if(parts[2]!='null')
+			if(parts[2]!="null")
 			put_object.addColumn(FAMILY, state, Bytes.toBytes(parts[2]));
-			if(parts[3]!='null')
+			if(parts[3]!="null")
 			put_object.addColumn(FAMILY, postal_code, Bytes.toBytes(parts[3]));
-			if(parts[4]!='null')
+			if(parts[4]!="null")
 			put_object.addColumn(FAMILY, birth_date, Bytes.toBytes(parts[4]));
-			if(parts[5]!='null')
+			if(parts[5]!="null")
 			put_object.addColumn(FAMILY, gender, Bytes.toBytes(parts[5]));
-			if(parts[6]!='null')
+			if(parts[6]!="null")
 			put_object.addColumn(FAMILY, patient_id, Bytes.toBytes(parts[6]));
-			if(parts[7]!='null')
+			if(parts[7]!="null")
 			put_object.addColumn(FAMILY, all_json, Bytes.toBytes(parts[7]));
 			c.output(put_object);
   }
