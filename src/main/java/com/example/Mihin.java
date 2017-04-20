@@ -13,6 +13,7 @@ import com.google.cloud.dataflow.sdk.transforms.DoFn;
 import com.google.cloud.dataflow.sdk.transforms.ParDo;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 import com.google.cloud.dataflow.sdk.values.PCollection;
+import com.google.cloud.dataflow.sdk.coders.StringUtf8Coder;
 import com.opencsv.CSVParser;
 import java.io.IOException;
 import com.google.cloud.bigtable.dataflow.CloudBigtableIO;
@@ -42,6 +43,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.io.FileWriter;
+import com.google.cloud.dataflow.sdk.transforms.Create;
 
 class Patient{
         public String name,city,state, postal_code,bdate,gender,patient_id,all_json;
@@ -49,7 +51,7 @@ class Patient{
 
 public class Mihin
 {
-	String file="";
+	public static String file="";
   private static final byte[] FAMILY = Bytes.toBytes("patient-entry");
   private static final byte[] name = Bytes.toBytes("name");
     private static final byte[] city = Bytes.toBytes("city");
