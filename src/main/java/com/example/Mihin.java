@@ -109,21 +109,21 @@ static final DoFn<String, Mutation> MUTATION_TRANSFORM = new DoFn<String, Mutati
 		Put put_object = new Put(Bytes.toBytes(row_id));
 		row_id = row_id +1;	
      		byte[] data = Bytes.toBytes(patients[i].name);
-		if(!parts[0].equals("null"))
+		if(!patients[i].name.equals("null"))
    		put_object.addColumn(FAMILY, name,data);
-		if(!parts[1].equals("null"))
+		if(!patients[i].city.equals("null"))
  		put_object.addColumn(FAMILY, city, Bytes.toBytes(patients[i].city));
-		if(!parts[2].equals("null"))
+		if(!patients[i].state.equals("null"))
 		put_object.addColumn(FAMILY, state, Bytes.toBytes(patients[i].state));
-		if(!parts[3].equals("null"))
+		if(!patients[i].postal_code.equals("null"))
 		put_object.addColumn(FAMILY, postal_code, Bytes.toBytes(patients[i].postal_code));
-		if(!parts[4].equals("null"))
+		if(!patients[i].bdate.equals("null"))
 		put_object.addColumn(FAMILY, birth_date, Bytes.toBytes(patients[i].bdate));
-		if(!parts[5].equals("null"))
+		if(!patients[i].gender.equals("null"))
 		put_object.addColumn(FAMILY, gender, Bytes.toBytes(patients[i].gender));
-		if(!parts[6].equals("null"))
+		if(!patients[i].patient_id.equals("null"))
 		put_object.addColumn(FAMILY, patient_id, Bytes.toBytes(patients[i].patient_id));
-		if(!parts[7].equals("null"))
+		if(!patients[i].all_json.equals("null"))
 		put_object.addColumn(FAMILY, all_json, Bytes.toBytes(patients[i].all_json));
 		c.output(put_object);	
 	}				
